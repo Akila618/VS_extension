@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 export function activate(context: vscode.ExtensionContext) {
 
 	console.log('GUI extension is now active!');
@@ -18,37 +20,22 @@ export function activate(context: vscode.ExtensionContext) {
             );
 
             // HTML content for the Webview
-            panel.webview.html = getWebviewContent();
+            panel.webview.html = getWebviewContent(panel.webview, context.extensionPath, 'index');
         })
     );
 }
 
-function getWebviewContent(): string {
-    return `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Python Integration</title>
-        </head>
-        <body>
-            <h1>Python Integration GUI</h1>
-            <form id="inputForm">
-                <label for="input">Enter your input:</label>
-                <input type="text" id="input" />
-                <button type="button" onclick="sendInput()">Submit</button>
-            </form>
-            <script>
-                const vscode = acquireVsCodeApi();
-                function sendInput() {
-                    const input = document.getElementById('input').value;
-                    vscode.postMessage({ command: 'submitInput', value: input });
-                }
-            </script>
-        </body>
-        </html>
-    `;
+function getWebviewContent(webview: vscode.Webview, extensionPath: string, viewName: string): string {
+    const htmlPath = path.join(extensionPath, 'src' ,'res', 'html', `${viewName}.html`);
+    let htmlContent = fs.readFileSync(htmlPath, 'utf-8');
+
+    // Replace placeholders (optional) for dynamic content
+    htmlContent = htmlContent.replace(
+        /{{baseUri}}/g,
+        webview.asWebviewUri(vscode.Uri.file(path.join(extensionPath, 'resources'))).toString()
+    );
+
+    return htmlContent;
 }
 
 

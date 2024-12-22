@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Integration</title>
+</head>
+<body>
+    <h1>Python Integration GUI</h1>
+    <form id="inputForm">
+        <label for="input">Enter your input:</label>
+        <input type="text" id="input" />
+        <button type="button" onclick="sendInput()">Submit</button>
+    </form>
+    <script>
+        const vscode = acquireVsCodeApi();
+        function sendInput() {
+            const input = document.getElementById('input').value;
+            vscode.postMessage({ command: 'submitInput', value: input });
+        }
+    </script>
+</body>
+</html>
